@@ -36,14 +36,10 @@ bld/
 [Bb]in/
 [Oo]bj/
 
-# Uncomment if you have tasks that create the project's static files in wwwroot
-#wwwroot/
-
 # Legacy NuGet and MSBuild package restore
 _NuGet/
 packages/
 *.nupkg
-# Packages folder can be ignored because of https://docs.microsoft.com/en-us/nuget/consume-packages/package-references-in-project-files
 
 # NuGet v3's machine-wide installed packages
 global-packages/
