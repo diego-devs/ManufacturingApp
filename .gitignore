@@ -1,0 +1,103 @@
+# Ignore Visual Studio temporary files, build results, and
+# user-specific files
+.vscode/
+.vs/
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Auto-generated files
+*.g.dart
+*.g.i.dart
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Mono auto generated files
+mono_crash.*
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+
+# Uncomment if you have tasks that create the project's static files in wwwroot
+#wwwroot/
+
+# Legacy NuGet and MSBuild package restore
+_NuGet/
+packages/
+*.nupkg
+# Packages folder can be ignored because of https://docs.microsoft.com/en-us/nuget/consume-packages/package-references-in-project-files
+
+# NuGet v3's machine-wide installed packages
+global-packages/
+packages/*
+!packages/build/
+!packages/protobuf-net.build/
+!packages/repositories.config
+
+# Auto generated UI files
+*.designer.cs
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Microsoft Office temporary files
+*.docx
+*.doc
+*.dot
+*.xls
+*.xlsx
+*.xlsb
+*.xlsm
+*.ppt
+*.pptx
+~$*
+
+# Windows shortcut files
+*.lnk
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# DotNet Runtime downloaded by tooling
+.dotnet/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+
+# IDEs
+.idea/
+*.sw?
+*.pyc
+.idea/
+.vscode/
