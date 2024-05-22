@@ -1,3 +1,5 @@
+using ManufacturingApp.API.Data;
+using ManufacturingApp.API.Interfaces;
 using ManufacturingApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -10,7 +12,8 @@ builder.Services.AddControllers();
 // Add DB Context
 builder.Services.AddDbContext<ManufacturingContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+// Add repository service 
+builder.Services.AddScoped(typeof(IManufacturingRepository<>), typeof(ManufacturingRepository<>));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
