@@ -8,9 +8,9 @@ namespace ManufacturingApp.API.Interfaces
         // CRUD IProductRepo, IRawMaterialRepo, etc...
         public Task<ICollection<T>> GetAllAsync();
         public Task<T> GetAsync(int id);
-        public void CreateAsync([FromBody] T entity);
-        public void UpdateAsync([FromBody] T entity);
-        public void DeleteAsync(int id);
+        public Task CreateAsync([FromBody] T entity);
+        public Task UpdateAsync([FromBody] T entity);
+        public Task DeleteAsync(int id);
 
     }
 }

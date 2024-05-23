@@ -11,9 +11,9 @@ namespace ManufacturingApp.API.Data
         // Concrete implementation
         private readonly ManufacturingContext _manufacturingContext;
         private readonly DbSet<T> _dbSets;
-        private readonly ILogger _logger;
+        private readonly ILogger<ManufacturingRepository<T>> _logger;
 
-        public ManufacturingRepository(ManufacturingContext manufacturingContext, ILogger logger)
+        public ManufacturingRepository(ManufacturingContext manufacturingContext, ILogger<ManufacturingRepository<T>> logger)
         {
             _manufacturingContext = manufacturingContext;
             _dbSets = _manufacturingContext.Set<T>();
@@ -40,14 +40,7 @@ namespace ManufacturingApp.API.Data
             try
             {
                 var entity = await _dbSets.FindAsync(id);
-                if (entity != null)
-                {
-                    return entity;
-                }
-                else
-                {
-                    return null;
-                }
+                return entity ?? null;
             }
             catch (Exception ex)
             {
@@ -56,7 +49,7 @@ namespace ManufacturingApp.API.Data
             }
         }
 
-        public async void CreateAsync(T entity)
+        public async Task CreateAsync(T entity)
         {
             try
             {
@@ -72,7 +65,7 @@ namespace ManufacturingApp.API.Data
             }
         }
        
-       public async void UpdateAsync(T entity)
+       public async Task UpdateAsync(T entity)
         {
             // update entity 
             try
@@ -86,7 +79,7 @@ namespace ManufacturingApp.API.Data
                 throw;
             }
         }
-        public async void DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
             try
             {
