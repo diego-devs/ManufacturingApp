@@ -8,7 +8,6 @@ namespace ManufacturingApp.API.Data
 {
     public class ManufacturingRepository<T> : IManufacturingRepository<T> where T : class
     {
-        // Concrete implementation
         private readonly ManufacturingContext _manufacturingContext;
         private readonly DbSet<T> _dbSets;
         private readonly ILogger<ManufacturingRepository<T>> _logger;
@@ -24,7 +23,6 @@ namespace ManufacturingApp.API.Data
         {
             try
             {
-                // get all elements from entity from db
                 return await _dbSets.ToListAsync();
             }
             catch (Exception ex)
@@ -36,7 +34,6 @@ namespace ManufacturingApp.API.Data
         }
         public async Task<T> GetAsync(int id)
         {
-            // get one entity from context by id
             try
             {
                 var entity = await _dbSets.FindAsync(id);
@@ -53,8 +50,6 @@ namespace ManufacturingApp.API.Data
         {
             try
             {
-                // context.Add to database
-                // save changes
                 await _dbSets.AddAsync(entity);
                 await _manufacturingContext.SaveChangesAsync();
             }
@@ -67,7 +62,6 @@ namespace ManufacturingApp.API.Data
        
        public async Task UpdateAsync(T entity)
         {
-            // update entity 
             try
             {
                 _dbSets.Update(entity);
@@ -83,8 +77,6 @@ namespace ManufacturingApp.API.Data
         {
             try
             {
-                // context delete from database
-                // save changes
                 var entity = await GetAsync(id);
                 if (entity != null)
                 {

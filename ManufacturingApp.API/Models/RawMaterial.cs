@@ -12,10 +12,11 @@ namespace ManufacturingApp.Models
         public string Name { get; set; }
         [JsonPropertyName("description")]
         public string Description { get; set; }
-        [JsonPropertyName("supplierRawMaterials")]
-        public ICollection<SupplierRawMaterial> SupplierRawMaterials {get;set;}
-        [JsonPropertyName("recipeRawMaterials")]
-        public ICollection<RecipeRawMaterial> RecipeRawMaterials { get;set;}
+
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ICollection<SupplierRawMaterial> SupplierRawMaterials {get;set;} = new List<SupplierRawMaterial>();
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ICollection<RecipeRawMaterial> RecipeRawMaterials { get; set; } = new List<RecipeRawMaterial>();
 
     }
 }

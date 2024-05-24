@@ -1,4 +1,5 @@
-﻿using ManufacturingApp.API.Interfaces;
+﻿using Azure.Messaging;
+using ManufacturingApp.API.Interfaces;
 using ManufacturingApp.Data;
 using ManufacturingApp.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -14,9 +15,9 @@ namespace ManufacturingApp.API.Controllers
     {
         private readonly IManufacturingRepository<RawMaterial> _repo;
         private readonly ILogger<RawMaterialController> _logger;
-        public RawMaterialController(IManufacturingRepository<RawMaterial> manufacturingRepository, ILogger<RawMaterialController> logger)
+        public RawMaterialController(IManufacturingRepository<RawMaterial> repo, ILogger<RawMaterialController> logger)
         {
-            _repo = manufacturingRepository;
+            _repo = repo;
             _logger = logger;
         }
 
@@ -31,7 +32,7 @@ namespace ManufacturingApp.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while getting all Raw Materials");
-                return StatusCode(500); // Internal Server Error
+                return StatusCode(500, "An error occurred while getting all Raw Materials"); // Internal Server Error
             }
         }
 
@@ -51,7 +52,7 @@ namespace ManufacturingApp.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while getting the Raw Material");
-                return StatusCode(500);
+                return StatusCode(500, "An error occurred while getting the Raw Material");
             }
         }
 
@@ -66,48 +67,56 @@ namespace ManufacturingApp.API.Controllers
             try
             {
                 await _repo.CreateAsync(rawMaterial);
-                return CreatedAtAction(nameof(GetByIdAsync), new { id = rawMaterial.Id }, rawMaterial);
+
+                if (rawMaterial.Id == 0)
+                {
+                    _logger.LogError("Failed to assign a valid ID to the Raw Material");
+                    return StatusCode(500, "Failed to assign a valid ID to the Raw Material"); // Internal Server Error
+                }
+                var actionName = nameof(GetByIdAsync);
+
+                var routeValues = new { id = rawMaterial.Id };
+
+                // Create response
+                var uri = Url.Action(nameof(GetByIdAsync), new { id = rawMaterial.Id });
+                return Created(uri, rawMaterial);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while creating a new product");
-                return StatusCode(500); // Internal Server Error
+                _logger.LogError(ex, "An error occurred while creating a new Raw Material");
+                return StatusCode(500, "An error occurred while creating a new Raw Material"); // Internal Server Error
             }
         }
 
         // PUT api/<RawMaterialController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(int id, [FromBody] RawMaterial rawMaterial)
+        public async Task<IActionResult> UpdateAsync([FromBody] RawMaterial rawMaterial)
         {
-            if (id != rawMaterial.Id || !ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             try
             {
                 await _repo.UpdateAsync(rawMaterial);
-                return NoContent();
+                return Ok(new { MessageContent = "Raw Material updated successfully" });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while updating the Raw Material");
-                return StatusCode(500);
+                return StatusCode(500, "An error occurred while updating the Raw Material");
             }
         }
 
         // DELETE api/<RawMaterialController>/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
             try
             {
                 await _repo.DeleteAsync(id);
-                return NoContent(); // dev todo, return something
+                return Ok(new { MessageContent = "Raw Material deleted successfully" });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while deleting Raw Material");
-                return StatusCode(500); // Internal Server Error
+                return StatusCode(500, "An error occurred while deleting Raw Material"); // Internal Server Error
             }
         }
     }

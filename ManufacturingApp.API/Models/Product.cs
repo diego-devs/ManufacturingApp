@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace ManufacturingApp.Models
@@ -9,12 +10,16 @@ namespace ManufacturingApp.Models
         [JsonPropertyName("id")]
         public int Id { get; set; }
         [JsonPropertyName("name")]
+        [Required]
         public string Name { get; set; }
         [JsonPropertyName("description")]
+        [Required]
         public string Description { get; set; }
         [JsonPropertyName("sellingPrice")]
+        [Required]
         public decimal SellingPrice { get; set; }
-        [JsonPropertyName("recipeProducts")]
-        public ICollection<RecipeProduct> RecipeProducts { get; set; }
+
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ICollection<RecipeProduct> RecipeProducts { get; set; } = new List<RecipeProduct>();
     }
 }

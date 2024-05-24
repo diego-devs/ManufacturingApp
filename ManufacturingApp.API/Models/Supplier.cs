@@ -14,7 +14,7 @@ namespace ManufacturingApp.Models
         [JsonPropertyName("description")]
         public string Description { get; set; }
 
-        [JsonPropertyName("supplierRawMaterials")]
-        public ICollection<SupplierRawMaterial> SupplierRawMaterials { get; set; }
+        [JsonIgnore]
+        public ICollection<SupplierRawMaterial> SupplierRawMaterials { get; set; } = new List<SupplierRawMaterial>();
     }
 }

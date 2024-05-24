@@ -1,4 +1,5 @@
-﻿using ManufacturingApp.API.Interfaces;
+﻿using Azure.Messaging;
+using ManufacturingApp.API.Interfaces;
 using ManufacturingApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -31,13 +32,13 @@ namespace ManufacturingApp.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while getting all products");
-                return StatusCode(500); // Internal Server Error
+                return StatusCode(500, "An error occurred while getting all products"); // Internal Server Error
             }
         }
 
         // GET api/<ProductController>/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetAsync(int id)
+        public async Task<IActionResult> GetByIdAsync(int id)
         {
             try
             {
@@ -50,8 +51,8 @@ namespace ManufacturingApp.API.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while getting the product");
-                return StatusCode(500);
+                _logger.LogError(ex, "An error occurred while getting the Product");
+                return StatusCode(500, "An error occurred while getting the Product");
             }
         }
 
@@ -66,32 +67,41 @@ namespace ManufacturingApp.API.Controllers
             try
             {
                 await _repo.CreateAsync(product);
-                return CreatedAtAction(nameof(GetAsync), new { id = product.Id }, product);
+
+                if (product.Id == 0)
+                {
+                    _logger.LogError("Failed to assign a valid ID to the product.");
+                    return StatusCode(500, "Failed to assign a valid ID to the product."); // Internal Server Error
+                }
+
+                var actionName = nameof(GetByIdAsync);
+
+                var routeValues = new { id = product.Id };
+
+                // Create the response
+                var uri = Url.Action(nameof(GetByIdAsync), new { id = product.Id });
+                return Created(uri, product);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while creating a new product");
-                return StatusCode(500); // Internal Server Error
+                return StatusCode(500, "An error occurred while creating a new product");
             }
         }
 
         // PUT api/<ProductController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(int id, [FromBody] Product product)
+        public async Task<IActionResult> UpdateAsync([FromBody] Product product)
         {
-            if (id != product.Id || !ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             try
             {
                 await _repo.UpdateAsync(product);
-                return NoContent();
+                return Ok(new { MessageContent = "Product updated successfully"});
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while updating the product");
-                return StatusCode(500);
+                return StatusCode(500, "An error occurred while updating the product");
             }
         }
 
@@ -101,13 +111,19 @@ namespace ManufacturingApp.API.Controllers
         {
             try
             {
-                await _repo.DeleteAsync(id);
-                return NoContent(); // dev todo, return something
+                var t = _repo.GetAsync(id);
+                if (t != null)
+                {
+                    await _repo.DeleteAsync(id);
+                    return Ok(new { MessageContent = "Product deleted successfully" });
+                }
+                return NotFound();
+                
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while deleting product");
-                return StatusCode(500); // Internal Server Error
+                return StatusCode(500, "An error occurred while deleting product"); // Internal Server Error
             }
         }
     }
