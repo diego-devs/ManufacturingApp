@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace ManufacturingApp.API.Controllers
 {
+    /// <summary>
+    /// Controller for managing products.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
@@ -17,6 +20,11 @@ namespace ManufacturingApp.API.Controllers
         private readonly IManufacturingRepository<Product> _productsRepo;
         private readonly ILogger<ProductsController> _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProductsController"/> class.
+        /// </summary>
+        /// <param name="repo">Repository for managing products.</param>
+        /// <param name="logger">Logger instance for logging errors and information.</param>
         public ProductsController(IManufacturingRepository<Product> repo, ILogger<ProductsController> logger)
         {
             _productsRepo = repo;

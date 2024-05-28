@@ -11,6 +11,9 @@ using System.Text.Json;
 
 namespace ManufacturingApp.API.Controllers
 {
+    /// <summary>
+    /// Controller for managing recipes and related entities.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class RecipesController : ControllerBase
@@ -24,6 +27,17 @@ namespace ManufacturingApp.API.Controllers
         private readonly IManufacturingRepository<Product> _productRepo;
         private readonly ILogger<RecipesController> _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RecipesController"/> class.
+        /// </summary>
+        /// <param name="recipeRepo">Repository for managing recipes.</param>
+        /// <param name="logger">Logger instance for logging errors and information.</param>
+        /// <param name="recipeRawMaterialRepo">Repository for managing recipe raw materials.</param>
+        /// <param name="recipeProductRepo">Repository for managing recipe products.</param>
+        /// <param name="supplierRepo">Repository for managing suppliers.</param>
+        /// <param name="supplierRawMaterialRepo">Repository for managing supplier raw materials.</param>
+        /// <param name="rawMaterialRepo">Repository for managing raw materials.</param>
+        /// <param name="productRepo">Repository for managing products.</param>
         public RecipesController(
             IManufacturingRepository<Recipe> recipeRepo, 
             ILogger<RecipesController> logger,
