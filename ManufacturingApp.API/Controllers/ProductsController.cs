@@ -23,7 +23,11 @@ namespace ManufacturingApp.API.Controllers
             _logger = logger;
         }
 
-        // GET: api/<ProductsController>
+        // GET api/<ProductsController>
+        /// <summary>
+        /// Retrieves all products from the repository.
+        /// </summary>
+        /// <returns>An action result containing a list of all products.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -54,6 +58,11 @@ namespace ManufacturingApp.API.Controllers
         }
 
         // GET api/<ProductsController>/5
+        /// <summary>
+        /// Retrieves a specific product by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the product to retrieve.</param>
+        /// <returns>An action result containing the product with the specified ID.</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
@@ -83,6 +92,11 @@ namespace ManufacturingApp.API.Controllers
         }
 
         // POST api/<ProductsController>
+        /// <summary>
+        /// Creates a new product.
+        /// </summary>
+        /// <param name="productDto">The product data transfer object containing the details of the product to create.</param>
+        /// <returns>An action result containing the created product.</returns>
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] ProductDTO productDto)
         {
@@ -130,6 +144,12 @@ namespace ManufacturingApp.API.Controllers
         }
 
         // PUT api/<ProductsController>/5
+        /// <summary>
+        /// Updates an existing product.
+        /// </summary>
+        /// <param name="id">The ID of the product to update.</param>
+        /// <param name="productDto">The product data transfer object containing the updated details of the product.</param>
+        /// <returns>An action result indicating the result of the update operation.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] ProductDTO productDto)
         {
@@ -162,6 +182,11 @@ namespace ManufacturingApp.API.Controllers
         }
 
         // DELETE api/<ProductsController>/5
+        /// <summary>
+        /// Deletes a specific product by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the product to delete.</param>
+        /// <returns>An action result indicating the result of the deletion operation.</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {

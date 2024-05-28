@@ -45,6 +45,10 @@ namespace ManufacturingApp.API.Controllers
         }
 
         // GET: api/<RecipesController>
+        /// <summary>
+        /// Retrieves all recipes from the repository.
+        /// </summary>
+        /// <returns>An action result containing a list of all recipes.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -109,6 +113,11 @@ namespace ManufacturingApp.API.Controllers
         }
 
         // GET api/<RecipesController>/5
+        /// <summary>
+        /// Retrieves a specific recipe by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the recipe to retrieve.</param>
+        /// <returns>An action result containing the recipe with the specified ID.</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
@@ -165,7 +174,12 @@ namespace ManufacturingApp.API.Controllers
                 return StatusCode(500, ApiMessages.ErrorGettingById);
             }
         }
-
+        // POST api/<RecipesController>
+        /// <summary>
+        /// Creates a new recipe.
+        /// </summary>
+        /// <param name="recipeDto">The recipe data transfer object containing the details of the recipe to create.</param>
+        /// <returns>An action result containing the created recipe.</returns>
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] RecipeDTO recipeDto)
         {
@@ -203,7 +217,7 @@ namespace ManufacturingApp.API.Controllers
                 var existingProduct = await _productRepo.GetAsync(productDto.ProductId);
                 if (existingProduct == null)
                 {
-                    var badRequest = $"Raw material with ID {productDto.ProductId} does not exist.";
+                    var badRequest = $"Product with ID {productDto.ProductId} does not exist.";
                     _logger.LogWarning(badRequest);
                     return BadRequest(badRequest);
                 }
@@ -281,9 +295,13 @@ namespace ManufacturingApp.API.Controllers
             }
         }
 
-
-
         // PUT api/<RecipesController>
+        /// <summary>
+        /// Updates an existing recipe.
+        /// </summary>
+        /// <param name="id">The ID of the recipe to update.</param>
+        /// <param name="recipeDto">The recipe data transfer object containing the updated details of the recipe.</param>
+        /// <returns>An action result indicating the result of the update operation.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] RecipeDTO recipeDto)
         {
@@ -357,6 +375,11 @@ namespace ManufacturingApp.API.Controllers
         }
 
         // DELETE api/Recipes/
+        /// <summary>
+        /// Deletes a specific recipe by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the recipe to delete.</param>
+        /// <returns>An action result indicating the result of the deletion operation.</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
@@ -378,41 +401,60 @@ namespace ManufacturingApp.API.Controllers
                 return StatusCode(500, ApiMessages.ErrorDeleting);
             }
         }
-
-        // POST api/Recipes/optimizeSuppliers
+        // POST api/Recipes/optimizeSuppliers/
+        /// <summary>
+        /// Optimizes the suppliers for a given recipe based on the best prices.
+        /// </summary>
+        /// <param name="recipeId">The ID of the recipe to optimize suppliers for.</param>
+        /// <returns>An action result containing the optimized suppliers and total cost.</returns>
         [HttpPost("optimizeSuppliers")]
         public async Task<IActionResult> OptimizeSuppliers(int recipeId)
         {
             try
             {
-                var recipe = await _recipeRepo.GetAsync(recipeId);
+                // Load the recipe with its related entities
+                var recipe = await _recipeRepo.GetAsync(recipeId, query => query
+                    .Include(r => r.RecipeRawMaterials)
+                        .ThenInclude(rrm => rrm.RawMaterial)
+                    .Include(r => r.RecipeProducts)
+                        .ThenInclude(rp => rp.Product));
+
                 if (recipe == null)
                 {
                     _logger.LogWarning(ApiMessages.ItemNotfound);
                     return NotFound(new { MessageContent = ApiMessages.ItemNotfound });
                 }
-                // Map recipe products and recipe raw materials
 
-                // Optimization logic
-
-                // Get all raw materials required by the recipe
+                // Ensure the raw materials and products are loaded
                 var rawMaterials = recipe.RecipeRawMaterials;
-
-                // Get all suppliers and their prices for the raw materials
-                var supplierPrices = new Dictionary<int, Dictionary<int, decimal>>();
-                var suppliers = await _supplierRepo.GetAllAsync();
-                foreach (var supplier in suppliers)
+                if (!rawMaterials.Any())
                 {
-                    var prices = await _supplierRawMaterialRepo.GetAllAsync();
-                    foreach (var price in prices.Where(p => p.SupplierId == supplier.Id))
-                    {
-                        if (!supplierPrices.ContainsKey(price.RawMaterialId))
-                        {
-                            supplierPrices[price.RawMaterialId] = new Dictionary<int, decimal>();
-                        }
-                        supplierPrices[price.RawMaterialId][price.SupplierId] = price.Price;
-                    }
+                    _logger.LogWarning($"{ApiMessages.NoRawMaterialsFound} for Recipe ID: {recipeId}");
+                    return BadRequest($"{ApiMessages.NoRawMaterialsFound} for Recipe ID: {recipeId}");
                 }
+
+                // Load all suppliers and their raw material prices
+                var supplierRawMaterials = await _supplierRawMaterialRepo.GetAllAsync(query => query
+                    .Include(srm => srm.RawMaterial)
+                    .Include(srm => srm.Supplier));
+
+                if (!supplierRawMaterials.Any())
+                {
+                    _logger.LogWarning(ApiMessages.ItemNotfound);
+                    return BadRequest(ApiMessages.ItemNotfound);
+                }
+
+                // Organize supplier prices by raw material ID
+                var supplierPrices = supplierRawMaterials
+                    .GroupBy(srm => srm.RawMaterialId)
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.ToDictionary(
+                            srm => srm.SupplierId,
+                            srm => srm.Price
+                        )
+                    );
+
                 // Calculate the optimal combination of suppliers
                 var optimizedSuppliers = new List<OptimizedSupplierDTO>();
                 decimal totalCost = 0;
@@ -423,12 +465,13 @@ namespace ManufacturingApp.API.Controllers
                     if (supplierPrices.ContainsKey(materialId))
                     {
                         var bestPrice = supplierPrices[materialId].OrderBy(p => p.Value).First();
-                        var supplier = suppliers.First(s => s.Id == bestPrice.Key);
+                        var supplier = supplierRawMaterials.First(srm => srm.SupplierId == bestPrice.Key).Supplier;
+
                         optimizedSuppliers.Add(new OptimizedSupplierDTO
                         {
                             SupplierId = supplier.Id,
                             SupplierName = supplier.Name,
-                            RawMaterialPrices = new Dictionary<int, decimal> { { materialId, bestPrice.Value } },
+                            RawMaterialPrices = new Dictionary<string, decimal> { { rawMaterial.RawMaterial.Name, bestPrice.Value } },
                             TotalCost = bestPrice.Value * rawMaterial.Quantity
                         });
                         totalCost += bestPrice.Value * rawMaterial.Quantity;
@@ -446,7 +489,6 @@ namespace ManufacturingApp.API.Controllers
                     Suppliers = optimizedSuppliers
                 };
 
-
                 return Ok(response);
             }
             catch (Exception ex)
@@ -455,5 +497,6 @@ namespace ManufacturingApp.API.Controllers
                 return StatusCode(500, ApiMessages.ErrorOptimizeSuppliers);
             }
         }
+
     }
 }

@@ -7,18 +7,56 @@ using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace ManufacturingApp.Data
 {
+    /// <summary>
+    /// Represents the database context for the manufacturing application.
+    /// </summary>
     public class ManufacturingContext : DbContext
     {
+        /// <summary>
+        /// Gets or sets the DbSet for products.
+        /// </summary>
         public DbSet<Product> Products { get; set; }
+
+        /// <summary>
+        /// Gets or sets the DbSet for raw materials.
+        /// </summary>
         public DbSet<RawMaterial> RawMaterials { get; set; }
+
+        /// <summary>
+        /// Gets or sets the DbSet for recipes.
+        /// </summary>
         public DbSet<Recipe> Recipes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the DbSet for recipe products.
+        /// </summary>
         public DbSet<RecipeProduct> RecipeProducts { get; set; }
-        public DbSet<RecipeRawMaterial> RecipeRawMaterials { get; set;}
+
+        /// <summary>
+        /// Gets or sets the DbSet for recipe raw materials.
+        /// </summary>
+        public DbSet<RecipeRawMaterial> RecipeRawMaterials { get; set; }
+
+        /// <summary>
+        /// Gets or sets the DbSet for suppliers.
+        /// </summary>
         public DbSet<Supplier> Suppliers { get; set; }
+
+        /// <summary>
+        /// Gets or sets the DbSet for supplier raw materials.
+        /// </summary>
         public DbSet<SupplierRawMaterial> SuppliersRawMaterials { get; set; }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ManufacturingContext"/> class.
+        /// </summary>
+        /// <param name="options">The options to be used by the DbContext.</param>
         public ManufacturingContext(DbContextOptions<ManufacturingContext> options) : base(options) // Typed DbContextOptions
         {
         }
+        /// <summary>
+        /// Configures the model for the context.
+        /// </summary>
+        /// <param name="modelBuilder">The builder used to construct the model.</param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // SupplierRawMaterial many-to-many configuration

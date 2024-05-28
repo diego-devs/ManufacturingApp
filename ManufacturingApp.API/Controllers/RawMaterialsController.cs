@@ -25,6 +25,10 @@ namespace ManufacturingApp.API.Controllers
         }
 
         // GET: api/<RawMaterialController>
+        /// <summary>
+        /// Retrieves all raw materials from the repository.
+        /// </summary>
+        /// <returns>An action result containing a list of all raw materials.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -52,6 +56,11 @@ namespace ManufacturingApp.API.Controllers
         }
 
         // GET api/<RawMaterialController>/5
+        /// <summary>
+        /// Retrieves a specific raw material by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the raw material to retrieve.</param>
+        /// <returns>An action result containing the raw material with the specified ID.</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
@@ -78,6 +87,11 @@ namespace ManufacturingApp.API.Controllers
         }
 
         // POST api/<RawMaterialController>
+        /// <summary>
+        /// Creates a new raw material.
+        /// </summary>
+        /// <param name="rawMaterialDto">The raw material data transfer object containing the details of the raw material to create.</param>
+        /// <returns>An action result containing the created raw material.</returns>
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] RawMaterialDTO rawMaterialDto)
         {
@@ -122,6 +136,12 @@ namespace ManufacturingApp.API.Controllers
         }
 
         // PUT api/<RawMaterialController>/5
+        /// <summary>
+        /// Updates an existing raw material.
+        /// </summary>
+        /// <param name="id">The ID of the raw material to update.</param>
+        /// <param name="rawMaterialDto">The raw material data transfer object containing the updated details of the raw material.</param>
+        /// <returns>An action result indicating the result of the update operation.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] RawMaterialDTO rawMaterialDto)
         {
@@ -151,6 +171,11 @@ namespace ManufacturingApp.API.Controllers
         }
 
         // DELETE api/<RawMaterialController>/5
+        /// <summary>
+        /// Deletes a specific raw material by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the raw material to delete.</param>
+        /// <returns>An action result indicating the result of the deletion operation.</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
