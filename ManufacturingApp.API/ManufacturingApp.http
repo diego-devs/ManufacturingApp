@@ -2,17 +2,17 @@
 
 ###
 # Get all products
-GET {{ManufacturingApp_HostAddress}}/api/Product/
+GET {{ManufacturingApp_HostAddress}}/api/Products
 Accept: application/json
 
 ###
 # Get a specific product by ID
-GET {{ManufacturingApp_HostAddress}}/api/Product/{id}
+GET {{ManufacturingApp_HostAddress}}/api/Products/1
 Accept: application/json
 
 ###
 # Create a new product
-POST {{ManufacturingApp_HostAddress}}/api/Product/
+POST {{ManufacturingApp_HostAddress}}/api/Products/
 Content-Type: application/json
 Accept: application/json
 
@@ -24,7 +24,7 @@ Accept: application/json
 
 ###
 # Update an existing product by ID
-PUT {{ManufacturingApp_HostAddress}}/api/Product/{id}
+PUT {{ManufacturingApp_HostAddress}}/api/Products/1
 Content-Type: application/json
 Accept: application/json
 
@@ -36,22 +36,22 @@ Accept: application/json
 
 ###
 # Delete a product by ID
-DELETE {{ManufacturingApp_HostAddress}}/api/Product/{id}
+DELETE {{ManufacturingApp_HostAddress}}/api/Products/1
 Accept: application/json
 
 ###
 # Get all raw materials
-GET {{ManufacturingApp_HostAddress}}/api/RawMaterial/
+GET {{ManufacturingApp_HostAddress}}/api/RawMaterials/
 Accept: application/json
 
 ###
 # Get a specific raw material by ID
-GET {{ManufacturingApp_HostAddress}}/api/RawMaterial/{id}
+GET {{ManufacturingApp_HostAddress}}/api/RawMaterials/1
 Accept: application/json
 
 ###
 # Create a new raw material
-POST {{ManufacturingApp_HostAddress}}/api/RawMaterial/
+POST {{ManufacturingApp_HostAddress}}/api/RawMaterials/
 Content-Type: application/json
 Accept: application/json
 
@@ -62,7 +62,7 @@ Accept: application/json
 
 ###
 # Update an existing raw material by ID
-PUT {{ManufacturingApp_HostAddress}}/api/RawMaterial/{id}
+PUT {{ManufacturingApp_HostAddress}}/api/RawMaterials/1
 Content-Type: application/json
 Accept: application/json
 
@@ -73,37 +73,40 @@ Accept: application/json
 
 ###
 # Delete a raw material by ID
-DELETE {{ManufacturingApp_HostAddress}}/api/RawMaterial/{id}
+DELETE {{ManufacturingApp_HostAddress}}/api/RawMaterials/1
 Accept: application/json
 
 ###
 # Get all recipes
-GET {{ManufacturingApp_HostAddress}}/api/Recipe/
+GET {{ManufacturingApp_HostAddress}}/api/Recipes/
 Accept: application/json
 
 ###
 # Get a specific recipe by ID
-GET {{ManufacturingApp_HostAddress}}/api/Recipe/{id}
+GET {{ManufacturingApp_HostAddress}}/api/Recipes/1
 Accept: application/json
 
 ###
 # Create a new recipe
-POST {{ManufacturingApp_HostAddress}}/api/Recipe/
+POST {{ManufacturingApp_HostAddress}}/api/Recipes/
 Content-Type: application/json
 Accept: application/json
 
 {
+    "id": 0,
     "name": "New Recipe",
     "description": "Description of the new recipe",
     "recipeRawMaterials": [
         {
-            "rawMaterialId": 1,
+            "rawMaterialId": 2,
+            "rawMaterialName": "string",
             "quantity": 2.5
         }
     ],
     "recipeProducts": [
         {
-            "productId": 1,
+            "productId": 2,
+            "productName": "string",
             "quantity": 5.0
         }
     ]
@@ -111,71 +114,79 @@ Accept: application/json
 
 ###
 # Update an existing recipe by ID
-PUT {{ManufacturingApp_HostAddress}}/api/Recipe/{id}
+PUT {{ManufacturingApp_HostAddress}}/api/Recipes/4
 Content-Type: application/json
 Accept: application/json
 
 {
+    "id": 4,
     "name": "Updated Recipe",
     "description": "Updated description",
     "recipeRawMaterials": [
         {
-            "rawMaterialId": 1,
-            "quantity": 3.0
+            "rawMaterialId": 2,
+            "rawMaterialName": "string",
+            "quantity": 2.0
         }
     ],
     "recipeProducts": [
         {
-            "productId": 1,
-            "quantity": 6.0
+            "productId": 2,
+            "productName": "string",
+            "quantity": 5.0
         }
-    ]
+    ], 
+    "recipeSuppliers": []
 }
 
 ###
 # Delete a recipe by ID
-DELETE {{ManufacturingApp_HostAddress}}/api/Recipe/{id}
+DELETE {{ManufacturingApp_HostAddress}}/api/Recipes/1
 Accept: application/json
 
 ###
 # Get all suppliers
-GET {{ManufacturingApp_HostAddress}}/api/Supplier/
+GET {{ManufacturingApp_HostAddress}}/api/Suppliers/
 Accept: application/json
 
 ###
 # Get a specific supplier by ID
-GET {{ManufacturingApp_HostAddress}}/api/Supplier/{id}
+GET {{ManufacturingApp_HostAddress}}/api/Suppliers/2
 Accept: application/json
 
 ###
 # Create a new supplier
-POST {{ManufacturingApp_HostAddress}}/api/Supplier/
+POST {{ManufacturingApp_HostAddress}}/api/Suppliers/
 Content-Type: application/json
 Accept: application/json
 
 {
+    "id": 0,
     "name": "New Supplier",
     "description": "Description of the new supplier",
     "supplierRawMaterials": [
         {
-            "rawMaterialId": 1,
-            "price": 15.00
+            "rawMaterialId": 2,
+            "rawMaterialName": "string",
+            "price": 14.00
         }
     ]
 }
 
 ###
 # Update an existing supplier by ID
-PUT {{ManufacturingApp_HostAddress}}/api/Supplier/{id}
+PUT {{ManufacturingApp_HostAddress}}/api/Suppliers/15
 Content-Type: application/json
 Accept: application/json
 
 {
+    "id": 15,
     "name": "Updated Supplier",
     "description": "Updated description",
     "supplierRawMaterials": [
         {
-            "rawMaterialId": 1,
+            "rawMaterialId": 6,
+            "rawMaterialName": "test",
             "price": 18.00
         }
     ]
@@ -183,5 +194,5 @@ Accept: application/json
 
 ###
 # Delete a supplier by ID
-DELETE {{ManufacturingApp_HostAddress}}/api/Supplier/{id}
+DELETE {{ManufacturingApp_HostAddress}}/api/Suppliers/4
 Accept: application/json
