@@ -11,12 +11,21 @@ using System.Security.AccessControl;
 
 namespace ManufacturingApp.API.Controllers
 {
+    /// <summary>
+    /// Controller for managing raw materials.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class RawMaterialsController : ControllerBase
     {
         private readonly IManufacturingRepository<RawMaterial> _rawMaterialsRepo;
         private readonly ILogger<RawMaterialsController> _logger;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RawMaterialsController"/> class.
+        /// </summary>
+        /// <param name="repo">Repository for managing raw materials.</param>
+        /// <param name="logger">Logger instance for logging errors and information.</param>
         public RawMaterialsController(IManufacturingRepository<RawMaterial> repo, 
                                         ILogger<RawMaterialsController> logger)
         {

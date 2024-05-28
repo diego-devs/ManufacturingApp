@@ -10,6 +10,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ManufacturingApp.API.Controllers
 {
+    /// <summary>
+    /// Controller for managing suppliers.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class SuppliersController : ControllerBase
@@ -17,6 +20,12 @@ namespace ManufacturingApp.API.Controllers
         private readonly IManufacturingRepository<Supplier> _supplierRepo;
         private readonly IManufacturingRepository<RawMaterial> _rawMaterialRepo;
         private readonly ILogger<SuppliersController> _logger;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SuppliersController"/> class.
+        /// </summary>
+        /// <param name="repo">Repository for managing suppliers.</param>
+        /// <param name="logger">Logger instance for logging errors and information.</param>
+        /// <param name="rawMaterialRepo">Repository for managing raw materials.</param>
         public SuppliersController(IManufacturingRepository<Supplier> repo,
                                    ILogger<SuppliersController> logger,
                                    IManufacturingRepository<RawMaterial> rawMaterialRepo)
