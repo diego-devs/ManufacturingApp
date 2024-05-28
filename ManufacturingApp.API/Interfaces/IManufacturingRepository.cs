@@ -9,6 +9,7 @@ namespace ManufacturingApp.API.Interfaces
         public Task<ICollection<T>> GetAllAsync(Func<IQueryable<T>, IQueryable<T>> include);
         public Task<ICollection<T>> GetAllAsync();
         public Task<T> GetAsync(int id, Func<IQueryable<T>, IQueryable<T>> include = null);
+        public Task<T> GetAsync(object[] keyValues, Func<IQueryable<T>, IQueryable<T>> include = null);
         public Task<T> GetAsync(int id);
         public Task CreateAsync([FromBody] T entity);
         public Task UpdateAsync([FromBody] T entity);

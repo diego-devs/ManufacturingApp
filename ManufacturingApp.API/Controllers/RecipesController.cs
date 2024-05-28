@@ -16,26 +16,32 @@ namespace ManufacturingApp.API.Controllers
     public class RecipesController : ControllerBase
     {
         private readonly IManufacturingRepository<Recipe> _recipeRepo;
-        private readonly IManufacturingRepository<RecipeRawMaterial> _rawMaterialRepo; 
-        private readonly IManufacturingRepository<RecipeProduct> _productRepo;
+        private readonly IManufacturingRepository<RecipeRawMaterial> _recipeRawMaterialRepo;
+        private readonly IManufacturingRepository<RawMaterial> _rawMaterialRepo;
+        private readonly IManufacturingRepository<RecipeProduct> _recipeProductRepo;
         private readonly IManufacturingRepository<Supplier> _supplierRepo;
         private readonly IManufacturingRepository<SupplierRawMaterial> _supplierRawMaterialRepo;
+        private readonly IManufacturingRepository<Product> _productRepo;
         private readonly ILogger<RecipesController> _logger;
 
         public RecipesController(
             IManufacturingRepository<Recipe> recipeRepo, 
             ILogger<RecipesController> logger,
-            IManufacturingRepository<RecipeRawMaterial> rawMaterialRepo,
-            IManufacturingRepository<RecipeProduct> productRepo,
+            IManufacturingRepository<RecipeRawMaterial> recipeRawMaterialRepo,
+            IManufacturingRepository<RecipeProduct> recipeProductRepo,
             IManufacturingRepository<Supplier> supplierRepo,
-            IManufacturingRepository<SupplierRawMaterial> supplierRawMaterialRepo)
+            IManufacturingRepository<SupplierRawMaterial> supplierRawMaterialRepo,
+            IManufacturingRepository<RawMaterial> rawMaterialRepo,
+            IManufacturingRepository<Product> productRepo)
         {
             _recipeRepo = recipeRepo;
             _logger = logger;
-            _rawMaterialRepo = rawMaterialRepo;
-            _productRepo = productRepo;
+            _recipeRawMaterialRepo = recipeRawMaterialRepo;
+            _recipeProductRepo = recipeProductRepo;
             _supplierRepo = supplierRepo;
             _supplierRawMaterialRepo = supplierRawMaterialRepo;
+            _rawMaterialRepo = rawMaterialRepo;
+            _productRepo = productRepo;
         }
 
         // GET: api/<RecipesController>
@@ -79,6 +85,7 @@ namespace ManufacturingApp.API.Controllers
                     }).ToList(),
                     RecipeSuppliers = suppliers.Select(s => new RecipeSupplierDTO
                     {
+                        Id = s.Id,
                         Name = s.Name,
                         Pricing = s.SupplierRawMaterials
                             .Where(srm => r.RecipeRawMaterials.Any(rrm => rrm.RawMaterialId == srm.RawMaterialId))
@@ -142,6 +149,7 @@ namespace ManufacturingApp.API.Controllers
                     }).ToList(),
                     RecipeSuppliers = suppliers.Select(s => new RecipeSupplierDTO
                     {
+                        Id = s.Id,
                         Name = s.Name,
                         Pricing = s.SupplierRawMaterials
                             .Where(srm => recipe.RecipeRawMaterials.Any(rrm => rrm.RawMaterialId == srm.RawMaterialId))
@@ -158,82 +166,113 @@ namespace ManufacturingApp.API.Controllers
             }
         }
 
-        // POST api/<RecipesController>
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] RecipeDTO recipeDto)
         {
-            // Check request model is correct
+            // Validate model
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning($"{ApiMessages.InvalidModelWarning} : {ModelState}");
                 return BadRequest(ModelState);
             }
-            // Validate existence of raw materials
+            // Validate existence of raw materials 
+            List<RecipeRawMaterial> recipeRawMaterials = new List<RecipeRawMaterial>();
+
             foreach (var rawMaterialDto in recipeDto.RecipeRawMaterials)
             {
-                var badRequest = BadRequest($"Raw material with ID {rawMaterialDto.RawMaterialId} does not exist.");
-                if (rawMaterialDto.RawMaterialId == 0)
+                var existingRawMaterial = await _rawMaterialRepo.GetAsync(rawMaterialDto.RawMaterialId);
+                if (existingRawMaterial == null)
                 {
-                    _logger.LogWarning($"{ApiMessages.ItemNotfound}");
-                    return badRequest;
+                    var badRequest = $"Raw material with ID {rawMaterialDto.RawMaterialId} does not exist.";
+                    _logger.LogWarning(badRequest);
+                    return BadRequest(badRequest);
                 }
-                var rawMaterial = await _rawMaterialRepo.GetAsync(rawMaterialDto.RawMaterialId);
-                if (rawMaterial == null)
+
+                recipeRawMaterials.Add(new RecipeRawMaterial
                 {
-                    _logger.LogWarning($"{ApiMessages.ItemNotfound}");
-                    return badRequest;
-                }
+                      RawMaterialId = rawMaterialDto.RawMaterialId,
+                      RawMaterial = existingRawMaterial,
+                      Quantity = rawMaterialDto.Quantity
+                });
             }
-            // Validate existence of products
+            // Validate existence of Products 
+            List<RecipeProduct> recipeProducts = new List<RecipeProduct>();
+
             foreach (var productDto in recipeDto.RecipeProducts)
             {
-                var badRequest = BadRequest($"Product with ID {productDto.ProductId} does not exist.");
-                if (productDto.ProductId == 0)
+                var existingProduct = await _productRepo.GetAsync(productDto.ProductId);
+                if (existingProduct == null)
                 {
-                    _logger.LogWarning($"{ApiMessages.ItemNotfound}");
-                    return badRequest;
+                    var badRequest = $"Raw material with ID {productDto.ProductId} does not exist.";
+                    _logger.LogWarning(badRequest);
+                    return BadRequest(badRequest);
                 }
-                var product = await _productRepo.GetAsync(productDto.ProductId);
-                if (product == null)
+
+                recipeProducts.Add(new RecipeProduct
                 {
-                    _logger.LogWarning($"{ApiMessages.ItemNotfound}");
-                    return badRequest;
-                }
+                    Product = existingProduct,
+                    RecipeId = recipeDto.Id,
+                    ProductId = existingProduct.Id,
+                    Quantity = productDto.Quantity
+                    
+                });
             }
-            // Create recipe from request DTO
+
             var recipe = new Recipe
             {
                 Name = recipeDto.Name,
                 Description = recipeDto.Description,
-                RecipeRawMaterials = recipeDto.RecipeRawMaterials.Select(rm => new RecipeRawMaterial
-                {
-                    RawMaterialId = rm.RawMaterialId,
-                    Quantity = rm.Quantity
-
-                }).ToList(),
-                RecipeProducts = recipeDto.RecipeProducts.Select(rp => new RecipeProduct
-                {
-                    ProductId = rp.ProductId,
-                    Quantity = rp.Quantity
-                }).ToList()
+                RecipeRawMaterials = recipeRawMaterials,
+                RecipeProducts = recipeProducts,
             };
 
             try
             {
-                // Create recipe
                 await _recipeRepo.CreateAsync(recipe);
-                // Handle error assigning Id
+
                 if (recipe.Id == 0)
                 {
                     _logger.LogError(ApiMessages.ErrorAssigningId);
                     return StatusCode(500, ApiMessages.ErrorAssigningId);
                 }
-                // Return created action
+
+                var rawMaterials = await _recipeRawMaterialRepo.GetAllAsync();
+                var products = await _recipeProductRepo.GetAllAsync();
+                var supplierRawMaterials = await _supplierRawMaterialRepo.GetAllAsync();
+                var suppliers = await _supplierRepo.GetAllAsync();
+
+                var createdRecipeDto = new RecipeDTO
+                {
+                    Id = recipe.Id,
+                    Name = recipe.Name,
+                    Description = recipe.Description,
+                    RecipeRawMaterials = recipe.RecipeRawMaterials.Select(rm => new RecipeRawMaterialDTO
+                    {
+                        RawMaterialId = rm.RawMaterialId,
+                        RawMaterialName = rawMaterials.First(r => r.RawMaterialId == rm.RawMaterialId).RawMaterial.Name,
+                        Quantity = rm.Quantity
+                    }).ToList(),
+                    RecipeProducts = recipe.RecipeProducts.Select(rp => new RecipeProductDTO
+                    {
+                        ProductId = rp.ProductId,
+                        ProductName = products.First(p => p.ProductId == rp.ProductId).Product.Name,
+                        Quantity = rp.Quantity
+                    }).ToList(),
+                    RecipeSuppliers = suppliers.Select(s => new RecipeSupplierDTO
+                    {
+                        Id = s.Id,
+                        Name = s.Name,
+                        Pricing = supplierRawMaterials
+                            .Where(srm => srm.SupplierId == s.Id && recipe.RecipeRawMaterials.Any(rrm => rrm.RawMaterialId == srm.RawMaterialId))
+                            .ToDictionary(srm => srm.RawMaterial.Name, srm => srm.Price)
+                    }).Where(s => s.Pricing.Any()).ToList()
+                };
+
                 var actionName = nameof(GetByIdAsync);
                 var routeValues = new { id = recipe.Id };
-                var uri = Url.Action(actionName, routeValues);
+                var uri = Url.Link(actionName, routeValues);
 
-                return Created(uri, recipeDto);
+                return Created(uri, createdRecipeDto);
             }
             catch (Exception ex)
             {
@@ -241,6 +280,8 @@ namespace ManufacturingApp.API.Controllers
                 return StatusCode(500, ApiMessages.ErrorCreating);
             }
         }
+
+
 
         // PUT api/<RecipesController>
         [HttpPut("{id}")]
@@ -268,7 +309,7 @@ namespace ManufacturingApp.API.Controllers
                     {
                         return badRequest;
                     }
-                    var rawMaterial = await _rawMaterialRepo.GetAsync(rawMaterialDto.RawMaterialId);
+                    var rawMaterial = await _recipeRawMaterialRepo.GetAsync(rawMaterialDto.RawMaterialId);
                     if (rawMaterial == null)
                     {
                         return badRequest;
@@ -283,7 +324,7 @@ namespace ManufacturingApp.API.Controllers
                     {
                         return badRequest;
                     }
-                    var product = await _productRepo.GetAsync(productDto.ProductId);
+                    var product = await _recipeProductRepo.GetAsync(productDto.ProductId);
                     if (product == null)
                     {
                         return badRequest;
@@ -340,7 +381,7 @@ namespace ManufacturingApp.API.Controllers
 
         // POST api/Recipes/optimizeSuppliers
         [HttpPost("optimizeSuppliers")]
-        public async Task<IActionResult> OptimizeSuppliers([FromBody] int recipeId)
+        public async Task<IActionResult> OptimizeSuppliers(int recipeId)
         {
             try
             {
@@ -350,6 +391,7 @@ namespace ManufacturingApp.API.Controllers
                     _logger.LogWarning(ApiMessages.ItemNotfound);
                     return NotFound(new { MessageContent = ApiMessages.ItemNotfound });
                 }
+                // Map recipe products and recipe raw materials
 
                 // Optimization logic
 

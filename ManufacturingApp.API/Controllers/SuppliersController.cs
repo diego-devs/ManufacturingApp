@@ -94,18 +94,19 @@ namespace ManufacturingApp.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] SupplierDTO supplierDto)
         {
+            // Validate model
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning(ApiMessages.InvalidModelWarning);
                 return BadRequest(ModelState);
             }
 
-            // Validate existence of raw materials and assign them
+            // Validate existence of raw materials and map them
             var supplierRawMaterials = new List<SupplierRawMaterial>();
             foreach (var rawMaterialDto in supplierDto.SupplierRawMaterials)
             {
-                var rawMaterial = await _rawMaterialRepo.GetAsync(rawMaterialDto.RawMaterialId);
-                if (rawMaterial == null)
+                var existingRawMaterial = await _rawMaterialRepo.GetAsync(rawMaterialDto.RawMaterialId);
+                if (existingRawMaterial == null)
                 {
                     var badRequest = $"Raw material with ID {rawMaterialDto.RawMaterialId} does not exist.";
                     _logger.LogWarning(badRequest);
@@ -114,12 +115,12 @@ namespace ManufacturingApp.API.Controllers
 
                 supplierRawMaterials.Add(new SupplierRawMaterial
                 {
-                    RawMaterial = rawMaterial, // Ensure RawMaterial entity is assigned
+                    RawMaterial = existingRawMaterial, // Ensure RawMaterial entity is mapped
                     RawMaterialId = rawMaterialDto.RawMaterialId,
                     Price = rawMaterialDto.Price
                 });
             }
-
+            // Create the object model to create
             var supplier = new Supplier
             {
                 Name = supplierDto.Name,

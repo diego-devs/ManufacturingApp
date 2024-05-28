@@ -4,6 +4,8 @@ namespace ManufacturingApp.API.DTOs
 {
     public class RecipeSupplierDTO
     {
+        [JsonPropertyName("supplierId")]
+        public int Id { get; set; }
         [JsonPropertyName("name")]
         public string Name { get; set; }
 

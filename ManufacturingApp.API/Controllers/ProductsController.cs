@@ -111,9 +111,16 @@ namespace ManufacturingApp.API.Controllers
 
                 var actionName = nameof(GetByIdAsync);
                 var routeValues = new { id = product.Id };
-                var uri = Url.Action(actionName, routeValues);
+                var uri = Url.Link(actionName, routeValues);
 
-                return Created(uri, productDto);
+                var createdProductDto = new RawMaterialDTO
+                {
+                    Id = product.Id,
+                    Name = product.Name,
+                    Description = product.Description
+                };
+
+                return Created(uri, createdProductDto);
             }
             catch (Exception ex)
             {
