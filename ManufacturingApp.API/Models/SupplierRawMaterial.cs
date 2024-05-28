@@ -14,9 +14,11 @@ namespace ManufacturingApp.Models
         public Supplier Supplier { get; set; }
 
         [JsonPropertyName("rawMaterialId")]
-        public int RawMaterialId { get; set; }
+        public int RawMaterialId { get; set; } 
+
         [JsonPropertyName("rawMaterial")]
         public RawMaterial RawMaterial { get; set; }
+
         [JsonPropertyName("price")]
         public decimal Price { get; set; }
     }

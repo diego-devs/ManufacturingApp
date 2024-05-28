@@ -19,24 +19,42 @@ namespace ManufacturingApp.API.Data
             _logger = logger;
         }
 
-        public async Task<ICollection<T>> GetAllAsync()
+        public async Task<ICollection<T>> GetAllAsync(Func<IQueryable<T>, IQueryable<T>> include = null)
         {
             try
             {
-                return await _dbSets.ToListAsync();
+                IQueryable<T> query = _dbSets;
+
+                if (include != null)
+                {
+                    query = include(query);
+                }
+
+                return await query.ToListAsync();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while getting all entities");
                 throw;
             }
-            
         }
-        public async Task<T> GetAsync(int id)
+        public async Task<ICollection<T>> GetAllAsync()
+        {
+            return await GetAllAsync(null);
+        }
+
+        public async Task<T> GetAsync(int id, Func<IQueryable<T>, IQueryable<T>> include = null)
         {
             try
             {
-                var entity = await _dbSets.FindAsync(id);
+                IQueryable<T> query = _dbSets;
+
+                if (include != null)
+                {
+                    query = include(query);
+                }
+
+                var entity = await query.FirstOrDefaultAsync(e => EF.Property<int>(e, "Id") == id);
                 return entity ?? null;
             }
             catch (Exception ex)
@@ -44,6 +62,10 @@ namespace ManufacturingApp.API.Data
                 _logger.LogError(ex, "An error occurred when getting the entity");
                 throw;
             }
+        }
+        public async Task<T> GetAsync(int id)
+        {
+            return await GetAsync(id, null);
         }
 
         public async Task CreateAsync(T entity)

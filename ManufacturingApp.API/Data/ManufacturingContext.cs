@@ -16,9 +16,8 @@ namespace ManufacturingApp.Data
         public DbSet<RecipeRawMaterial> RecipeRawMaterials { get; set;}
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<SupplierRawMaterial> SuppliersRawMaterials { get; set; }
-        public ManufacturingContext(DbContextOptions options) : base(options)
+        public ManufacturingContext(DbContextOptions<ManufacturingContext> options) : base(options) // Typed DbContextOptions
         {
-
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

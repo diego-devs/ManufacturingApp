@@ -12,9 +12,9 @@ namespace ManufacturingApp.Models
         public string Name { get; set; }
         [JsonPropertyName("description")]
         public string Description { get; set; }
-        [JsonIgnore]
+        [JsonPropertyName("recipeRawMaterials")]
         public ICollection<RecipeRawMaterial> RecipeRawMaterials { get; set; } = new List<RecipeRawMaterial>();
-        [JsonIgnore]
+        [JsonPropertyName("recipeProducts")]
         public ICollection<RecipeProduct> RecipeProducts { get; set; } = new List<RecipeProduct>();
         
     }

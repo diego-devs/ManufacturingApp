@@ -1,20 +1,21 @@
 ﻿using Azure.Core.Serialization;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace ManufacturingApp.Models
+namespace ManufacturingApp.API.DTOs
 {
-    [Table("Supplier")]
-    public class Supplier
+    public class ProductDTO
     {
         [JsonPropertyName("id")]
         public int Id { get; set; }
         [JsonPropertyName("name")]
+        [Required]
         public string Name { get; set; }
         [JsonPropertyName("description")]
+        [Required]
         public string Description { get; set; }
-
-        [JsonPropertyName("supplierRawMaterials")]
-        public ICollection<SupplierRawMaterial> SupplierRawMaterials { get; set; } = new List<SupplierRawMaterial>();
+        [JsonPropertyName("sellingPrice")]
+        [Required]
+        public decimal SellingPrice { get; set; }
     }
 }
