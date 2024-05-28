@@ -30,5 +30,7 @@ namespace ManufacturingApp.API
         public static string? InvalidModelWarning => $"{GetResourceString("InvalidModelWarning")}";
         public static string? NoSupplierFound => $"{GetResourceString("NoSupplierFound")}";
         public static string? ErrorOptimizeSuppliers => $"{GetResourceString("ErrorOptimizeSuppliers")}";
+
+        public static object NoRawMaterialsFound => $"{GetResourceString("NoRawMaterialsFound")}";
     }
 }
