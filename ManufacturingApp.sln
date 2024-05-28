@@ -5,7 +5,7 @@ VisualStudioVersion = 17.9.34714.143
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManufacturingApp.API", "ManufacturingApp.API\ManufacturingApp.API.csproj", "{3A3FB3B2-581E-49A8-94CA-A48C266FAB08}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManufacturingApp.Tests", "ManufacturingApp.Tests\ManufacturingApp.Tests.csproj", "{C461AA4D-B878-41AC-ADC4-F35F86703D74}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManufacturingApp.API.Tests", "ManufacturingApp.API.Tests\ManufacturingApp.API.Tests.csproj", "{C461AA4D-B878-41AC-ADC4-F35F86703D74}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
