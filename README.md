@@ -100,15 +100,15 @@ The Swagger UI will provide an interactive interface for testing the API endpoin
 |-------------|---------------------------------|------------------------------------------------|
 | POST        | /api/recipes/optimizeSuppliers  | Calculates the optimal combination of suppliers for a given recipe to minimize the total cost of ingredients. Requires a recipe ID in the request body |
 
-## Sample Data
-Optionally, you can execute the InitializeSampleData.sql file located in 
-ManufacturingApp.API/Data/ folder. 
+## Loading of Sample Data
+This is optional. You can execute the ```InitializeSampleData.sql``` file located in 
+``ManufacturingApp.API/Data/`` folder.
 
-This will create the needed objects for the example recipe from [the Manufacturing Assessment](https://github.com/zepeda-luis/ManufacturingApp).
+This will create the needed objects for the example recipe from the repository [Manufacturing App Assessment](https://github.com/zepeda-luis/ManufacturingApp).
 
-## Testing
+## Testing the API EndPoints 
+You can use the Swagger UI to interact with and test the API endpoints, or any other tool like Postman to test the API endpoints. Information about each EndPoint is displayed in the Swagger UI grabbed from commented code. 
 
-You can use the Swagger UI to interact with and test the API endpoints, or any other tool like Postman to test the API endpoints. 
-
-The **Unit Tests project** is still in development on a parallel branch called ``develop``.
-
+## ManufacturingApp.API.Tests - Unit Testing
+ManufacturingApp.API.Tests is the Unit Tests project. To run all test just 
+execute them with ``dotnet test`` or Visual Studio / CTR + R, A

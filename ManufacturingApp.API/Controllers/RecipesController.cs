@@ -499,6 +499,8 @@ namespace ManufacturingApp.API.Controllers
 
                 var response = new
                 {
+                    RecipeName = recipe.Name,
+                    RecipeId = recipeId,
                     TotalCost = totalCost,
                     Suppliers = optimizedSuppliers
                 };

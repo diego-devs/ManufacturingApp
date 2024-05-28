@@ -1,6 +1,187 @@
 @ManufacturingApp_HostAddress = http://localhost:5169
 
-GET {{ManufacturingApp_HostAddress}}/Product/
+###
+# Get all products
+GET {{ManufacturingApp_HostAddress}}/api/Product/
 Accept: application/json
 
 ###
+# Get a specific product by ID
+GET {{ManufacturingApp_HostAddress}}/api/Product/{id}
+Accept: application/json
+
+###
+# Create a new product
+POST {{ManufacturingApp_HostAddress}}/api/Product/
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "New Product",
+    "description": "Description of the new product",
+    "sellingPrice": 25.50
+}
+
+###
+# Update an existing product by ID
+PUT {{ManufacturingApp_HostAddress}}/api/Product/{id}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Updated Product",
+    "description": "Updated description",
+    "sellingPrice": 30.00
+}
+
+###
+# Delete a product by ID
+DELETE {{ManufacturingApp_HostAddress}}/api/Product/{id}
+Accept: application/json
+
+###
+# Get all raw materials
+GET {{ManufacturingApp_HostAddress}}/api/RawMaterial/
+Accept: application/json
+
+###
+# Get a specific raw material by ID
+GET {{ManufacturingApp_HostAddress}}/api/RawMaterial/{id}
+Accept: application/json
+
+###
+# Create a new raw material
+POST {{ManufacturingApp_HostAddress}}/api/RawMaterial/
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "New Raw Material",
+    "description": "Description of the new raw material"
+}
+
+###
+# Update an existing raw material by ID
+PUT {{ManufacturingApp_HostAddress}}/api/RawMaterial/{id}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Updated Raw Material",
+    "description": "Updated description"
+}
+
+###
+# Delete a raw material by ID
+DELETE {{ManufacturingApp_HostAddress}}/api/RawMaterial/{id}
+Accept: application/json
+
+###
+# Get all recipes
+GET {{ManufacturingApp_HostAddress}}/api/Recipe/
+Accept: application/json
+
+###
+# Get a specific recipe by ID
+GET {{ManufacturingApp_HostAddress}}/api/Recipe/{id}
+Accept: application/json
+
+###
+# Create a new recipe
+POST {{ManufacturingApp_HostAddress}}/api/Recipe/
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "New Recipe",
+    "description": "Description of the new recipe",
+    "recipeRawMaterials": [
+        {
+            "rawMaterialId": 1,
+            "quantity": 2.5
+        }
+    ],
+    "recipeProducts": [
+        {
+            "productId": 1,
+            "quantity": 5.0
+        }
+    ]
+}
+
+###
+# Update an existing recipe by ID
+PUT {{ManufacturingApp_HostAddress}}/api/Recipe/{id}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Updated Recipe",
+    "description": "Updated description",
+    "recipeRawMaterials": [
+        {
+            "rawMaterialId": 1,
+            "quantity": 3.0
+        }
+    ],
+    "recipeProducts": [
+        {
+            "productId": 1,
+            "quantity": 6.0
+        }
+    ]
+}
+
+###
+# Delete a recipe by ID
+DELETE {{ManufacturingApp_HostAddress}}/api/Recipe/{id}
+Accept: application/json
+
+###
+# Get all suppliers
+GET {{ManufacturingApp_HostAddress}}/api/Supplier/
+Accept: application/json
+
+###
+# Get a specific supplier by ID
+GET {{ManufacturingApp_HostAddress}}/api/Supplier/{id}
+Accept: application/json
+
+###
+# Create a new supplier
+POST {{ManufacturingApp_HostAddress}}/api/Supplier/
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "New Supplier",
+    "description": "Description of the new supplier",
+    "supplierRawMaterials": [
+        {
+            "rawMaterialId": 1,
+            "price": 15.00
+        }
+    ]
+}
+
+###
+# Update an existing supplier by ID
+PUT {{ManufacturingApp_HostAddress}}/api/Supplier/{id}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Updated Supplier",
+    "description": "Updated description",
+    "supplierRawMaterials": [
+        {
+            "rawMaterialId": 1,
+            "price": 18.00
+        }
+    ]
+}
+
+###
+# Delete a supplier by ID
+DELETE {{ManufacturingApp_HostAddress}}/api/Supplier/{id}
+Accept: application/json
