@@ -144,6 +144,9 @@
   <data name="ItemNotFound" xml:space="preserve">
     <value>Item does not exist</value>
   </data>
+  <data name="NoRawMaterialsFound" xml:space="preserve">
+    <value>No Raw Materials found.</value>
+  </data>
   <data name="NoSupplierFound" xml:space="preserve">
     <value>No supplier found for raw material ID</value>
   </data>

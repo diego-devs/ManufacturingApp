@@ -9,7 +9,7 @@ namespace ManufacturingApp.API.DTOs
         [JsonPropertyName("supplierName")]
         public string SupplierName { get; set; }
         [JsonPropertyName("rawMaterialPrices")]
-        public Dictionary<int, decimal> RawMaterialPrices { get; set; } // Key: RawMaterialId, Value: Price
+        public Dictionary<string, decimal> RawMaterialPrices { get; set; } // Key: RawMaterialId, Value: Price
         [JsonPropertyName("totalCost")]
         public decimal TotalCost { get; set; }
     }

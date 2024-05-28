@@ -27,6 +27,10 @@ namespace ManufacturingApp.API.Controllers
         }
 
         // GET: api/<SuppliersController>
+        /// <summary>
+        /// Retrieves all suppliers from the repository.
+        /// </summary>
+        /// <returns>An action result containing a list of all suppliers.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -56,6 +60,11 @@ namespace ManufacturingApp.API.Controllers
         }
 
         // GET api/<SuppliersController>/5
+        /// <summary>
+        /// Retrieves a specific supplier by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the supplier to retrieve.</param>
+        /// <returns>An action result containing the supplier with the specified ID.</returns>
         [HttpGet("{id}", Name = "GetByIdAsync")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
@@ -91,6 +100,11 @@ namespace ManufacturingApp.API.Controllers
         }
 
         // POST api/<SuppliersController>
+        /// <summary>
+        /// Creates a new supplier.
+        /// </summary>
+        /// <param name="supplierDto">The supplier data transfer object containing the details of the supplier to create.</param>
+        /// <returns>An action result containing the created supplier.</returns>
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] SupplierDTO supplierDto)
         {
@@ -168,6 +182,12 @@ namespace ManufacturingApp.API.Controllers
         }
 
         // PUT api/<SuppliersController>/5
+        /// <summary>
+        /// Updates an existing supplier.
+        /// </summary>
+        /// <param name="id">The ID of the supplier to update.</param>
+        /// <param name="supplierDto">The supplier data transfer object containing the updated details of the supplier.</param>
+        /// <returns>An action result indicating the result of the update operation.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] SupplierDTO supplierDto)
         {
@@ -197,6 +217,11 @@ namespace ManufacturingApp.API.Controllers
         }
 
         // DELETE api/<SuppliersController>/5
+        /// <summary>
+        /// Deletes a specific supplier by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the supplier to delete.</param>
+        /// <returns>An action result indicating the result of the deletion operation.</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
