@@ -327,59 +327,106 @@ namespace ManufacturingApp.API.Controllers
 
             try
             {
-                // Check recipe exists
-                var existingRecipe = await _recipeRepo.GetAsync(id);
+                // Check if recipe exists and include related entities
+                var existingRecipe = await _recipeRepo.GetAsync(id, query => query
+                    .Include(r => r.RecipeRawMaterials)
+                        .ThenInclude(rrm => rrm.RawMaterial)
+                    .Include(r => r.RecipeProducts)
+                        .ThenInclude(rp => rp.Product));
+
                 if (existingRecipe == null)
                 {
                     return NotFound(new { MessageContent = ApiMessages.ItemNotfound });
                 }
+
                 // Validate existence of raw materials
+                var recipeRawMaterials = new List<RecipeRawMaterial>();
                 foreach (var rawMaterialDto in recipeDto.RecipeRawMaterials)
                 {
-                    var badRequest = BadRequest($"Raw material with ID {rawMaterialDto.RawMaterialId} does not exist.");
-                    if (rawMaterialDto.RawMaterialId == 0)
+                    var existingRawMaterial = await _rawMaterialRepo.GetAsync(rawMaterialDto.RawMaterialId);
+                    if (existingRawMaterial == null)
                     {
-                        return badRequest;
+                        var badRequest = $"Raw material with ID {rawMaterialDto.RawMaterialId} does not exist.";
+                        _logger.LogWarning(badRequest);
+                        return BadRequest(badRequest);
                     }
-                    var rawMaterial = await _recipeRawMaterialRepo.GetAsync(rawMaterialDto.RawMaterialId);
-                    if (rawMaterial == null)
+
+                    recipeRawMaterials.Add(new RecipeRawMaterial
                     {
-                        return badRequest;
-                    }
+                        RawMaterialId = rawMaterialDto.RawMaterialId,
+                        RawMaterial = existingRawMaterial,
+                        Quantity = rawMaterialDto.Quantity
+                    });
                 }
 
                 // Validate existence of products
+                var recipeProducts = new List<RecipeProduct>();
                 foreach (var productDto in recipeDto.RecipeProducts)
                 {
-                    var badRequest = BadRequest($"Product with ID {productDto.ProductId} does not exist.");
-                    if (productDto.ProductId == 0)
+                    var existingProduct = await _productRepo.GetAsync(productDto.ProductId);
+                    if (existingProduct == null)
                     {
-                        return badRequest;
+                        var badRequest = $"Product with ID {productDto.ProductId} does not exist.";
+                        _logger.LogWarning(badRequest);
+                        return BadRequest(badRequest);
                     }
-                    var product = await _recipeProductRepo.GetAsync(productDto.ProductId);
-                    if (product == null)
+
+                    recipeProducts.Add(new RecipeProduct
                     {
-                        return badRequest;
-                    }
+                        Product = existingProduct,
+                        RecipeId = existingRecipe.Id,
+                        ProductId = existingProduct.Id,
+                        Quantity = productDto.Quantity
+                    });
                 }
-                // Edit with new values
+
+                // Update recipe with new values
                 existingRecipe.Name = recipeDto.Name;
                 existingRecipe.Description = recipeDto.Description;
-                existingRecipe.RecipeRawMaterials = recipeDto.RecipeRawMaterials.Select(rm => new RecipeRawMaterial
-                {
-                    RecipeId = existingRecipe.Id,
-                    RawMaterialId = rm.RawMaterialId,
-                    Quantity = rm.Quantity
-                }).ToList();
-                existingRecipe.RecipeProducts = recipeDto.RecipeProducts.Select(rp => new RecipeProduct
-                {
-                    RecipeId = existingRecipe.Id,
-                    ProductId = rp.ProductId,
-                    Quantity = rp.Quantity
-                }).ToList();
-                // Update recipe
+                existingRecipe.RecipeRawMaterials = recipeRawMaterials;
+                existingRecipe.RecipeProducts = recipeProducts;
+
+                // Update recipe in the repository
                 await _recipeRepo.UpdateAsync(existingRecipe);
-                return Ok(new { MessageContent = ApiMessages.SuccessUpdated });
+
+                // Fetch related entities for creating the response DTO
+                var suppliers = await _supplierRepo.GetAllAsync();
+                var supplierRawMaterials = await _supplierRawMaterialRepo.GetAllAsync();
+                var updatedRecipe = await _recipeRepo.GetAsync(existingRecipe.Id, query => query
+                    .Include(r => r.RecipeRawMaterials)
+                        .ThenInclude(rrm => rrm.RawMaterial)
+                    .Include(r => r.RecipeProducts)
+                        .ThenInclude(rp => rp.Product));
+
+                // Create DTO for the response
+                var updatedRecipeDto = new RecipeDTO
+                {
+                    Id = updatedRecipe.Id,
+                    Name = updatedRecipe.Name,
+                    Description = updatedRecipe.Description,
+                    RecipeRawMaterials = updatedRecipe.RecipeRawMaterials.Select(rm => new RecipeRawMaterialDTO
+                    {
+                        RawMaterialId = rm.RawMaterialId,
+                        RawMaterialName = rm.RawMaterial?.Name ?? "Unknown", // Handle potential null values
+                        Quantity = rm.Quantity
+                    }).ToList(),
+                    RecipeProducts = updatedRecipe.RecipeProducts.Select(rp => new RecipeProductDTO
+                    {
+                        ProductId = rp.ProductId,
+                        ProductName = rp.Product?.Name ?? "Unknown", // Handle potential null values
+                        Quantity = rp.Quantity
+                    }).ToList(),
+                    RecipeSuppliers = suppliers.Select(s => new RecipeSupplierDTO
+                    {
+                        Id = s.Id,
+                        Name = s.Name,
+                        Pricing = supplierRawMaterials
+                            .Where(srm => srm.SupplierId == s.Id && updatedRecipe.RecipeRawMaterials.Any(rrm => rrm.RawMaterialId == srm.RawMaterialId))
+                            .ToDictionary(srm => srm.RawMaterial?.Name ?? "Unknown", srm => srm.Price) // Handle potential null values
+                    }).Where(s => s.Pricing.Any()).ToList()
+                };
+
+                return Ok(updatedRecipeDto);
             }
             catch (Exception ex)
             {
@@ -387,6 +434,8 @@ namespace ManufacturingApp.API.Controllers
                 return StatusCode(500, ApiMessages.ErrorUpdating);
             }
         }
+
+
 
         // DELETE api/Recipes/
         /// <summary>
