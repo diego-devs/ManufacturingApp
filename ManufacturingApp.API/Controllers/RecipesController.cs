@@ -80,6 +80,8 @@ namespace ManufacturingApp.API.Controllers
                     return NoContent();
                 }
                 // Fetch suppliers and pricing for raw materials
+                //s => s.Id: Specify the key will be the Supplier ID
+                //s => s: Specify the value will be the entire Supplier Object
                 var suppliers = await _supplierRepo.GetAllAsync(query => query.Include(s => s.SupplierRawMaterials));
                 var supplierDict = suppliers.ToDictionary(s => s.Id, s => s);
 
@@ -110,11 +112,8 @@ namespace ManufacturingApp.API.Controllers
                             .ToDictionary(srm => srm.RawMaterial.Name, srm => srm.Price)
                     }).Where(s => s.Pricing.Any()).ToList()
                 }).ToList();
-                var options = new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                };
 
+                var options = new JsonSerializerOptions { WriteIndented = true };
                 var json = JsonSerializer.Serialize(recipeDtos, options);
 
                 return Ok(json);
